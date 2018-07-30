@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Pixel Burn</title>
+        <style type="text/css">
+        html {height: 99%;}
+        body {
+          margin: 0px;
+          padding: 0px;
+          background: #000000;
+          height: 100%;
+        }
+        </style>
+	</head>
+	<body>
+		<canvas id="myCanvas" width="400" height="400" style="width: 100%; height: 100%;"</canvas>
+		<script type="text/javascript">
+			
+var canvas = document.getElementById('myCanvas');
+var context = canvas.getContext('2d');
+
+/* workaround to set pixel ------------------------------ */
+// Data1 is shown
+var canvasData1 = context.getImageData(0, 0, canvas.width, canvas.height);
+// Data2 is a copy to set new pixels
+var canvasData2 = context.getImageData(0, 0, canvas.width, canvas.height);
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+	  x: evt.clientX - rect.left,
+	  y: evt.clientY - rect.top
+	};
+}
+
+function isAlive(id) {
+	return (canvasData1.data[id+3] == 255);
+}
+
+function born(id) {
+	canvasData2.data[id+0] = 255;   // red
+	canvasData2.data[id+1] = 255; // green
+	canvasData2.data[id+2] = 255;   // blue
+	canvasData2.data[id+3] = 255; // alpha/transparenz
+}
+
+function dead(id) {
+	canvasData2.data[id+0] = 255;
+	canvasData2.data[id+1] = 255;
+	canvasData2.data[id+2] = 255;
+	canvasData2.data[id+3] = 0;
+}
+
+function dieCell(id) {
+	canvasData2.data[id+0] = 255;
+	canvasData2.data[id+1] = 0;
+	canvasData2.data[id+2] = 0;
+	canvasData2.data[id+3] = 250;
+}
+
+function life() {
+	var x = 0;
+	var y = 0;
+	var i0,i1,i2,i3,i4,i5,i6,i7,i8;
+	
+	for (x=1; x<canvas.width-1; x++) {
+		
+		for (y=1; y<canvas.height-1; y++) {
+			
+			var nb = 0;
+			i0 = (x + y * canvas.width) * 4;
+			i1 = (x-1 + (y-1) * canvas.width) * 4;
+			i2 = (x-1 +  y    * canvas.width) * 4;
+			i3 = (x-1 + (y+1) * canvas.width) * 4;
+			i4 = (x   + (y-1) * canvas.width) * 4;
+			i5 = (x   + (y+1) * canvas.width) * 4;
+			i6 = (x+1 + (y-1) * canvas.width) * 4;
+			i7 = (x+1 +  y    * canvas.width) * 4;
+			i8 = (x+1 + (y+1) * canvas.width) * 4;
+			
+			// count living neightbors -------------------------
+			if (isAlive(i1)) { nb++;}
+			if (isAlive(i2)) { nb++;}
+			if (isAlive(i3)) { nb++;}
+			if (isAlive(i4)) { nb++;}
+			if (isAlive(i5)) { nb++;}
+			if (isAlive(i6)) { nb++;}
+			if (isAlive(i7)) { nb++;}
+			if (isAlive(i8)) { nb++;}
+			
+			// dead cells
+			if (isAlive(i8) == false) {
+				if (nb == 3) {
+					// to life ---------------------------------- Rule 1
+					born(i0);
+				} else {
+					// black
+					dead(i0);
+				}
+			// living cells
+			} else {
+				if (nb < 2) {
+					// loneliness to dead ----------------------- Rule 2
+					dieCell(i0);
+				} else if (nb == 2 || nb == 3) {
+					// stay alive ------------------------------- Rule 3
+					born(i0);
+				} else {
+					// to many and die -------------------------- Rule 4
+					dieCell(i0);
+				}
+			}
+		}
+	}
+	canvasData1 = canvasData2;
+	context.putImageData(canvasData1, 0, 0);
+	setTimeout(life, 100); // start life() again in 100ms
+}
+
+canvas.addEventListener("mousemove", function(evt) {
+	var pos = getMousePos(canvas, evt);
+	var index = (pos.x + pos.y * canvas.width) * 4;
+	born(index);
+	context.putImageData(canvasData1, 0, 0);
+}, false);
+
+
+life();
+
+		</script>
+	</body>
+</html>

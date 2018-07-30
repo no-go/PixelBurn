@@ -1,0 +1,29 @@
+{
+  "productName": "PixelBurn",
+  "name": "pixel-burn",
+  "version": "0.1.0",
+  "description": "Game of Live Clone",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "license": "MIT",
+  "author": "Secure Internet Guy",
+  "devDependencies": {
+    "electron": "^2.0.5",
+    "electron-builder": "^20.26.0"
+  },
+  "build": {
+    "appId": "de.digisocken.pixelburn",
+    "mac": {
+      "category": "public.app-category.games"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico",
+      "publisherName": "Secure Internet Guy"
+    }
+  }
+}
