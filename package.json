@@ -12,7 +12,7 @@
   "license": "MIT",
   "author": "Secure Internet Guy",
   "devDependencies": {
-    "electron": "^2.0.5",
+    "electron": "^9.1.0",
     "electron-builder": "^20.26.0"
   },
   "build": {
